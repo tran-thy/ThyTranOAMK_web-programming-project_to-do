@@ -33,31 +33,56 @@ const renderTask = (task) => {
     li.setAttribute('data-key', task.getId().toString())
     li.innerHTML = task.getText();
 
-    renderSpan(li, task.getText());     // Render task description
-    renderLink(li, task.getId());       // Render delete link
-    list.appendChild(li);         // Append list item to task list
+    renderSpan(li, task.getText()); // Render task description
+    renderLink(li, task.getId()); // Render delete link
+    list.appendChild(li); // Append list item to task list
 }
 
 // Task 5.2 Function to render a span element containing text
 const renderSpan = (li, text) => {
     const span = document.createElement('span');
     span.innerHTML = text;
+    console.log('Data is fetched for rendering task description');
 }
 
-// Task 5.3 Function to render a link element with trash icon
-const renderLink = (li,id) => {
+// Task 5.3_v1 Function to render a link element with trash icon
+// const renderLink = (li, id) => {
+//     const a = li.appendChild(document.createElement('a'))
+//     a.innerHTML = '<i class="bi bi-trash"></i>';
+//     a.setAttribute('style', 'float: right')
+//     a.addEventListener('click', (event) => {
+//         todos.removeTask(id).then((removed_id) => {
+//             const li_to_remove = document.querySelector(`[data-key='${removed_id}']`)
+//             if (li_to_remove) {
+//                 list.removeChild(li_to_remove)
+//             }
+//         }).catch((error) => {
+//             alert(error)
+//         })
+//     })
+// }
+
+// Task 5.3_v2 Function to render a link element with trash icon - add the highlight and border for trash icons
+const renderLink = (li, id) => {
     const a = li.appendChild(document.createElement('a'))
-    a.innerHTML = '<i class="bi bi-trash"></i>';
-    a.setAttribute('style','float: right')
-    a.addEventListener('click',(event)=> {
-        todos.removeTask(id).then((removed_id)=>{
+    const iconContainer = document.createElement('span');
+    iconContainer.classList.add('trash-icon-container');
+    a.appendChild(iconContainer);
+    const icon = document.createElement('i');
+    icon.classList.add('bi', 'bi-trash');
+    iconContainer.appendChild(icon);
+    a.setAttribute('style', 'float: right');
+    a.addEventListener('click', (event) => {
+        todos.removeTask(id).then((removed_id) => {
             const li_to_remove = document.querySelector(`[data-key='${removed_id}']`)
             if (li_to_remove) {
                 list.removeChild(li_to_remove)
             }
-        }).catch((error)=>{
+        }).catch((error) => {
             alert(error)
         })
+        iconContainer.classList.toggle('highlighted'); // Toggle the 'highlighted' class
+        console.log('Data is fetched for removing task');
     })
 }
 
@@ -74,9 +99,9 @@ const getTasks = () => {
 }
 
 // Task 3.3_v2 Function to save a new task to the backend
-const saveTask = async (task) => {
+const saveTask = async(task) => {
     try {
-        const json = JSON.stringify({ description: task }); 
+        const json = JSON.stringify({ description: task });
         const response = await fetch(BACKEND_ROOT_URL + '/new', {
             method: 'post',
             headers: {
@@ -124,7 +149,7 @@ document.getElementById('todoForm').addEventListener('submit', (event) => {
 
 
 // Task 3.My personal add - Function to delete a task from the backend
-const deleteTask = async (taskId) => {
+const deleteTask = async(taskId) => {
     try {
         const response = await fetch(BACKEND_ROOT_URL + '/delete', {
             method: 'delete', // Use DELETE method
@@ -148,7 +173,5 @@ const deleteTask = async (taskId) => {
 
 // Task 3 Call getTasks function after DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    getTasks(); 
+    getTasks();
 });
-
-

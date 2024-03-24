@@ -28,18 +28,18 @@ input.disabled = true;
 const renderTask = (task) => {
     const li = document.createElement('li');
     li.setAttribute('class', 'list-group-item');
-    
+
     // Task description
     const taskDescription = document.createElement('span');
     taskDescription.innerHTML = task.getText(); // Using getText method to get the task description
-    
+
     // Delete button using createDeleteButton function
     const deleteButton = createDeleteButton(task);
 
     // Append elements to list item
     li.appendChild(taskDescription);
     li.appendChild(deleteButton); // Append delete button to the list item
-    
+
     // Append list item to task list
     list.appendChild(li);
 }
@@ -51,15 +51,16 @@ const getTasks = () => {
             renderTask(task);
         });
         input.disabled = false;
+        console.log('Data is fetched during initial loading');
     }).catch((error) => {
         alert("Error retrieving tasks: " + error.message);
     });
 }
 
 // Task 3.3_v2 Function to save a new task to the backend
-const saveTask = async (task) => {
+const saveTask = async(task) => {
     try {
-        const json = JSON.stringify({ description: task }); 
+        const json = JSON.stringify({ description: task });
         const response = await fetch(BACKEND_ROOT_URL + '/new', {
             method: 'post',
             headers: {
@@ -109,7 +110,7 @@ document.getElementById('todoForm').addEventListener('submit', (event) => {
 
 
 // Task 3.My personal add - Function to delete a task from the backend
-const deleteTask = async (taskId) => {
+const deleteTask = async(taskId) => {
     try {
         const response = await fetch(BACKEND_ROOT_URL + '/delete', {
             method: 'delete', // Use DELETE method
@@ -133,7 +134,5 @@ const deleteTask = async (taskId) => {
 
 // Task 3 Call getTasks function after DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    getTasks(); 
+    getTasks();
 });
-
-
