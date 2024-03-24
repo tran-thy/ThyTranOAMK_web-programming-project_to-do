@@ -1,60 +1,52 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg');
-const path = require('path');
+const { query } = require('./helpers/db.js');
 
 const app = express();
-app.use(express.json()); // Add this line to parse JSON requests
-app.use(express.urlencoded({ extended: false })); // Use express.urlencoded middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
-// Configure CORS with specific options
-const corsOptions = {
-    origin: 'http://127.0.0.1:3000', // Allow requests only from this origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow specified HTTP methods
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-};
-app.use(cors(corsOptions));
+const port = process.env.PORT || 3001;
 
-app.use('/js', express.static(path.join(__dirname, 'js'))); // Serve static files from the 'js' directory
-
-const port = 3001;
-
-const pool = openDB(); // Initialize connection pool
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 // GET endpoint
-app.get("/", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*"); // Set the CORS header
-    pool.query('SELECT * FROM tasks', (error, result) => {
-        if (error) {
-            res.status(500).json({ error: error.message });
-        } else {
-            res.status(200).json(result.rows);
-        }
-    });
+app.get("/", async (req, res) => {
+    try {
+        const result = await query('SELECT * FROM tasks');
+        const rows = result.rows ? result.rows : [];
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error executing query:", error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // POST endpoint
-app.post("/new", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*"); // Set the CORS header
-    const pool = openDB();
-
-    pool.query('INSERT INTO tasks (description) VALUES ($1) RETURNING *', [req.body.description], (error, result) => {
-        if (error) {
-            res.status(500).json({ error: error.message });
-        } else {
-            res.status(200).json({ id: result.rows[0].id });
-        }
-    });
+app.post("/new", async (req, res) => {
+    try {
+        const result = await query('INSERT INTO tasks (description) VALUES ($1) RETURNING *', [req.body.description]);
+        res.status(200).json({ id: result.rows[0].id });
+    } catch (error) {
+        console.error("Error executing query:", error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // DELETE endpoint for deleting a task by ID
 app.delete("/delete/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     try {
-        const result = await pool.query('DELETE FROM tasks WHERE id = $1', [id]);
+        const result = await query('DELETE FROM tasks WHERE id = $1', [id]);
         res.status(200).json({ id: id });
     } catch (error) {
+        console.error("Error executing query:", error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -63,18 +55,19 @@ app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-function openDB() {
-    const pool = new Pool({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'todo',
-        password: 'root',
-        port: 5432
-    });
-    return pool;
-}
 
 
+
+// function openDB() {
+//     const pool = new Pool({
+//         user: 'postgres',
+//         host: 'localhost',
+//         database: 'todo',
+//         password: 'root',
+//         port: 5432
+//     });
+//     return pool;
+// }
 
 // My personal add - DELETE endpoint
 // app.delete("/delete", (req, res) => {
