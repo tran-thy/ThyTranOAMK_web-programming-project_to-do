@@ -150,3 +150,5 @@ const deleteTask = async (taskId) => {
 document.addEventListener('DOMContentLoaded', () => {
     getTasks(); 
 });
+
+
