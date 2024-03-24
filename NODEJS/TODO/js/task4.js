@@ -74,22 +74,6 @@ const saveTask = async (task) => {
 };
 
 
-// Task 3.4_v2 Event listener for Enter key press in the input field
-// input.addEventListener('keypress', (event) => {
-//     if (event.key === 'Enter') {
-//         event.preventDefault();
-//         const task = input.value.trim();
-//         if (task !== '') {
-//             saveTask(task).then((json) => {
-//                 renderTask(task);
-//                 input.value = '';
-//             }).catch((error) => {
-//                 alert("Error saving task: " + error.message);
-//             });
-//         }
-//     }
-// });
-
 // Task 4 Update addEventListener so it uses method implemented on Todos class - enter
 input.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
@@ -107,19 +91,6 @@ input.addEventListener('keypress', (event) => {
     }
 });
 
-// Task 3.My personal Add - Event listener for form submission
-// document.getElementById('todoForm').addEventListener('submit', (event) => {
-//     event.preventDefault(); // Prevent default form submission behavior
-//     const task = input.value.trim();
-//     if (task !== '') {
-//         saveTask(task).then((json) => {
-//             renderTask(task);
-//             input.value = '';
-//         }).catch((error) => {
-//             alert("Error saving task: " + error.message);
-//         });
-//     }
-// });
 
 // Task 4 Update addEventListener so it uses method implemented on Todos class - form submission
 document.getElementById('todoForm').addEventListener('submit', (event) => {
